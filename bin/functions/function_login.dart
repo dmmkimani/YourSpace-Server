@@ -39,13 +39,13 @@ class Login {
 
           case 'INVALID_PASSWORD':
             return Response.notFound(
-                'Please enter a valid email and password combination');
+                'Please enter a valid email address and password combination');
 
           case 'USER_DISABLED':
             return Response.notFound('That user account has been disabled');
 
           case 'INVALID_EMAIL':
-            return Response.notFound('Please enter a valid email');
+            return Response.notFound('Please enter a valid email address');
 
           default:
             return Response.notFound(
