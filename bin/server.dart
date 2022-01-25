@@ -7,24 +7,30 @@ import 'package:shelf_router/shelf_router.dart';
 import 'package:firedart/firedart.dart';
 
 import 'functions/function_create_account.dart';
-import 'functions/function_get_capacity.dart';
+import 'functions/function_get_bookings.dart';
+import 'functions/function_get_room_details.dart';
 import 'functions/function_login.dart';
 
 final _router = Router()
   ..post('/create_account', _createAccount)
   ..post('/login', _login)
-  ..post('/capacity', _getCapacity);
+  ..post('/room_details', _getRoomDetails)
+  ..post('/bookings', _getBookings);
 
 Future<Response> _createAccount(Request request) async {
   return CreateAccount().createAccount(request);
 }
 
 Future<Response> _login(Request request) async {
-   return Login().login(request);
+  return Login().login(request);
 }
 
-Future<Response> _getCapacity(Request request) async {
-  return GetCapacity().getCapacity(request);
+Future<Response> _getRoomDetails(Request request) async {
+  return GetRoomDetails().getRoomDetails(request);
+}
+
+Future<Response> _getBookings(Request request) async {
+  return GetBookings().getBookings(request);
 }
 
 void main(List<String> args) async {

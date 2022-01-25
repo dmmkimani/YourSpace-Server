@@ -1,13 +1,11 @@
 import 'dart:convert';
 
-import 'package:http/http.dart' as http;
 import 'package:shelf/shelf.dart';
+import 'package:http/http.dart' as http;
 
 import 'function_helpers.dart';
 
 class Login {
-  final HelperFunctions _helpers = HelperFunctions();
-
   Future<Response> login(Request request) async {
     return await request
         .readAsString(request.encoding)
@@ -18,7 +16,7 @@ class Login {
 
       String endpoint =
           "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=" +
-              _helpers.getAPI();
+              HelperFunctions().getAPI();
 
       http.Response response = await http.post(Uri.parse(endpoint),
           headers: {'Content-type': 'application/json'},
@@ -30,7 +28,7 @@ class Login {
 
       Map<String, dynamic> responseBody = json.decode(response.body);
 
-      if (responseBody.containsKey('error')) {
+      if(responseBody.containsKey('error')) {
         Map<String, dynamic> errorDetails = responseBody['error'];
         String message = errorDetails['message'];
         switch (message) {
@@ -56,7 +54,7 @@ class Login {
       }
 
       String uid = responseBody['localId'];
-      String token = _helpers.createToken(uid);
+      String token = HelperFunctions().createToken(uid);
 
       return Response.ok(token);
     });
