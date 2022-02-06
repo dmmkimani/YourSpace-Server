@@ -16,6 +16,12 @@ class Book {
       String date = body['date'].toString();
       String startTime = body['startTime'].toString();
       Map<String, dynamic> details = body['details'];
+
+      if (details['people'] == '' || details['description'] == '') {
+        return Response.forbidden(
+            'Please fill in all the details of your booking');
+      }
+
       int duration = details['duration'];
 
       String path =
@@ -24,9 +30,9 @@ class Book {
       Map<String, dynamic> bookings =
           json.decode(await GetBookings().getDocument(path));
 
-      int timeSlot = timeSlotToInt(startTime);
+      int start = timeSlotToInt(startTime);
 
-      for (int i = timeSlot; i < (timeSlot + duration); i++) {
+      for (int i = start; i < (start + duration); i++) {
         String slot = intToTimeSlot(i);
 
         if (bookings[slot]['available'] == true) {
@@ -40,7 +46,21 @@ class Book {
         }
       }
 
-      for (int i = timeSlot; i < (timeSlot + duration); i++) {
+      Map<String, dynamic> roomDetails = await Firestore.instance
+          .document('buildings/' + building + '/rooms/' + room)
+          .get()
+          .then((Document document) => document.map);
+
+      if (int.parse(details['people']) > int.parse(roomDetails['capacity'])) {
+        return Response.forbidden(
+            'This room can only hold ' + roomDetails['capacity'] + ' people');
+      }
+
+      if (duration <= 0) {
+        return Response.forbidden('Please enter a valid booking duration');
+      }
+
+      for (int i = start; i < (start + duration); i++) {
         String slot = intToTimeSlot(i);
         bookings[slot]['booking']['booked'] = true;
         bookings[slot]['booking']['details'] = {
