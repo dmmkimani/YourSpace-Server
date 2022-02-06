@@ -68,7 +68,8 @@ class GetBookings {
 
   Map<String, dynamic> createEmptySlots() {
     Map<String, dynamic> emptySlots = {};
-    Map<String, dynamic> empty = {'available': true, 'booked': false};
+    Map<String, dynamic> booking = {'booked': false, 'details': {}};
+    Map<String, dynamic> empty = {'available': true, 'booking': booking};
     for (int i = 9; i <= 17; i++) {
       String time = i.toString();
       if (time.length == 2) {

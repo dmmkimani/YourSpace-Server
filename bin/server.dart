@@ -6,6 +6,7 @@ import 'package:shelf_router/shelf_router.dart';
 
 import 'package:firedart/firedart.dart';
 
+import 'functions/function_book.dart';
 import 'functions/function_create_account.dart';
 import 'functions/function_get_bookings.dart';
 import 'functions/function_get_room_details.dart';
@@ -15,7 +16,8 @@ final _router = Router()
   ..post('/create_account', _createAccount)
   ..post('/login', _login)
   ..post('/room_details', _getRoomDetails)
-  ..post('/bookings', _getBookings);
+  ..post('/bookings', _getBookings)
+  ..post('/book', _book);
 
 Future<Response> _createAccount(Request request) async {
   return CreateAccount().createAccount(request);
@@ -31,6 +33,10 @@ Future<Response> _getRoomDetails(Request request) async {
 
 Future<Response> _getBookings(Request request) async {
   return GetBookings().getBookings(request);
+}
+
+Future<Response> _book(Request request) async {
+  return Book().book(request);
 }
 
 void main(List<String> args) async {
