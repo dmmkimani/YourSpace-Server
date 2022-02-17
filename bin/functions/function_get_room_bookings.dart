@@ -7,7 +7,7 @@ import 'package:firedart/firedart.dart';
 
 import 'function_helpers.dart';
 
-class GetBookings {
+class GetRoomBookings {
   Future<Response> getBookings(Request request) async {
     return await request
         .readAsString(request.encoding)
@@ -17,8 +17,7 @@ class GetBookings {
       String room = body['room'].toString();
       String date = body['date'].toString();
 
-      String path =
-          'buildings/' + building + '/rooms/' + room + '/bookings/' + date;
+      String path = 'buildings/$building/rooms/$room/bookings/$date';
 
       String endpoint =
           'https://firestore.googleapis.com/v1/projects/wall-mounted-room-calendar/databases/(default)/documents/' +
@@ -39,7 +38,7 @@ class GetBookings {
             return Response.ok(await createDocument(path));
 
           default:
-            return Response.notFound('Something went wrong!');
+            return Response.notFound(json.encode('Something went wrong!'));
         }
       }
       return Response.ok(await getDocument(path));
@@ -68,17 +67,10 @@ class GetBookings {
 
   Map<String, dynamic> createEmptySlots() {
     Map<String, dynamic> emptySlots = {};
-    Map<String, dynamic> booking = {'booked': false, 'details': {}};
-    Map<String, dynamic> empty = {'available': true, 'booking': booking};
+    Map<String, dynamic> empty = {'available': true, 'booked': false};
     for (int i = 9; i <= 17; i++) {
-      String time = i.toString();
-      if (time.length == 2) {
-        String timeSlot = time + ':00';
-        emptySlots[timeSlot] = empty;
-      } else {
-        String timeSlot = '0' + time + ':00';
-        emptySlots[timeSlot] = empty;
-      }
+      String timeSlot = HelperFunctions().intToTimeSlot(i);
+      emptySlots[timeSlot] = empty;
     }
     return emptySlots;
   }

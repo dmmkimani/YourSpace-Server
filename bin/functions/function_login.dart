@@ -14,6 +14,11 @@ class Login {
       String? email = loginInfo['email'].toString();
       String? password = loginInfo['password'].toString();
 
+      if (HelperFunctions().areInputsEmpty([email, password])) {
+        return Response.forbidden(
+            json.encode('Please complete your account details'));
+      }
+
       String endpoint =
           "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=" +
               HelperFunctions().getAPI();
@@ -28,35 +33,37 @@ class Login {
 
       Map<String, dynamic> responseBody = json.decode(response.body);
 
-      if(responseBody.containsKey('error')) {
+      if (responseBody.containsKey('error')) {
         Map<String, dynamic> errorDetails = responseBody['error'];
         String message = errorDetails['message'];
         switch (message) {
           case 'EMAIL_NOT_FOUND':
-            return Response.notFound('That user does not exist');
+            return Response.forbidden(json.encode('That user does not exist'));
 
           case 'INVALID_PASSWORD':
-            return Response.notFound(
-                'Please enter a valid email address and password combination');
+            return Response.forbidden(json.encode(
+                'Please enter a valid email address and password combination'));
 
           case 'USER_DISABLED':
-            return Response.notFound('That user account has been disabled');
+            return Response.forbidden(
+                json.encode('That user account has been disabled'));
 
           case 'INVALID_EMAIL':
-            return Response.notFound('Please enter a valid email address');
+            return Response.forbidden(
+                json.encode('Please enter a valid email address'));
 
           default:
-            return Response.notFound(
+            return Response.forbidden(json.encode(
                 'Access to this account has been temporarily disabled due to many '
                 'failed login attempts. You can immediately restore it by resetting '
-                'your password or you can try again later');
+                'your password or you can try again later'));
         }
       }
 
       String uid = responseBody['localId'];
       String token = HelperFunctions().createToken(uid);
 
-      return Response.ok(token);
+      return Response.ok(json.encode(token));
     });
   }
 }

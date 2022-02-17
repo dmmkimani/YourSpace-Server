@@ -23,6 +23,25 @@ class HelperFunctions {
     return jwt.sign(RSAPrivateKey(getPrivateKey()), algorithm: JWTAlgorithm.RS256);
   }
 
+  bool areInputsEmpty(List<String> inputs) {
+    for (int i = 0; i < inputs.length; i++) {
+      String input = inputs[i];
+      if (input.isEmpty) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  String intToTimeSlot(int i) {
+    String time = i.toString();
+    if (time.length == 2) {
+      return time + ':00';
+    } else {
+      return '0' + time + ':00';
+    }
+  }
+
   String getPrivateKey() {
     String privateKey =
         "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCyzSj8JEU6PJsR"

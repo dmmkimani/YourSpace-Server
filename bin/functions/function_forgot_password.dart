@@ -31,7 +31,7 @@ class ForgotPassword {
         switch (message) {
           case 'EMAIL_NOT_FOUND':
             return Response.notFound(
-                'There is no account registered with that email');
+                json.encode('There is no account registered with that email'));
         }
       }
       return Response.ok('');
