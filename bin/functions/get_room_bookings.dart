@@ -5,10 +5,10 @@ import 'package:http/http.dart' as http;
 
 import 'package:firedart/firedart.dart';
 
-import 'function_helpers.dart';
+import 'helpers.dart';
 
 class GetRoomBookings {
-  Future<Response> getBookings(Request request) async {
+  Future<Response> get(Request request) async {
     return await request
         .readAsString(request.encoding)
         .then((String jsonString) async {
@@ -23,7 +23,7 @@ class GetRoomBookings {
           'https://firestore.googleapis.com/v1/projects/wall-mounted-room-calendar/databases/(default)/documents/' +
               path +
               '?key=' +
-              HelperFunctions().getAPI();
+              Helpers().getAPI();
 
       http.Response response = await http.get(Uri.parse(endpoint),
           headers: {'Content-type': 'application/json'});
@@ -41,18 +41,8 @@ class GetRoomBookings {
             return Response.notFound(json.encode('Something went wrong!'));
         }
       }
-      return Response.ok(await getDocument(path));
+      return Response.ok(json.encode(await Helpers().getDocument(path)));
     });
-  }
-
-  Future<String> getDocument(String path) async {
-    Map<String, dynamic> roomBookings = await Firestore.instance
-        .document(path)
-        .get()
-        .then((Document document) => document.map);
-
-    String bookings = json.encode(roomBookings);
-    return bookings;
   }
 
   Future<String> createDocument(String path) async {
@@ -69,7 +59,7 @@ class GetRoomBookings {
     Map<String, dynamic> emptySlots = {};
     Map<String, dynamic> empty = {'available': true, 'booked': false};
     for (int i = 9; i <= 17; i++) {
-      String timeSlot = HelperFunctions().intToTimeSlot(i);
+      String timeSlot = Helpers().intToTimeSlot(i);
       emptySlots[timeSlot] = empty;
     }
     return emptySlots;

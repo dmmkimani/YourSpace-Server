@@ -3,12 +3,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shelf/shelf.dart';
 
-import 'function_helpers.dart';
+import 'helpers.dart';
 
 class ForgotPassword {
-  final HelperFunctions _helpers = HelperFunctions();
-
-  Future<Response> resetPassword(Request request) async {
+  Future<Response> reset(Request request) async {
     return await request
         .readAsString(request.encoding)
         .then((String jsonString) async {
@@ -17,7 +15,7 @@ class ForgotPassword {
 
       String endpoint =
           'https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=' +
-              _helpers.getAPI();
+              Helpers().getAPI();
 
       http.Response response = await http.post(Uri.parse(endpoint),
           headers: {'Content-type': 'application/json'},

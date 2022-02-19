@@ -5,7 +5,8 @@ import 'package:shelf/shelf.dart';
 
 import 'package:firedart/firedart.dart';
 
-import 'function_helpers.dart';
+import 'helpers.dart';
+import 'helpers_login.dart';
 
 class CreateAccount {
   Future<Response> create(Request request) async {
@@ -18,14 +19,14 @@ class CreateAccount {
       String email = accountInfo['email'].toString();
       String password = accountInfo['password'].toString();
 
-      if (HelperFunctions().areInputsEmpty([fName, lName, email, password])) {
+      if (LoginHelpers().areInputsEmpty([fName, lName, email, password])) {
         return Response.forbidden(
             json.encode('Please fill in all the text fields'));
       }
 
       String endpoint =
           "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=" +
-              HelperFunctions().getAPI();
+              Helpers().getAPI();
 
       http.Response response = await http.post(Uri.parse(endpoint),
           headers: {'Content-type': 'application/json'},
@@ -59,7 +60,7 @@ class CreateAccount {
           .create({'admin': false, 'fName': fName, 'lName': lName});
 
       String uid = responseBody['localId'];
-      String token = HelperFunctions().createToken(uid);
+      String token = LoginHelpers().createToken(uid);
 
       return Response.ok(token);
     });

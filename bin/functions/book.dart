@@ -1,10 +1,9 @@
 import 'dart:convert';
 
-import 'package:firedart/firedart.dart';
 import 'package:shelf/shelf.dart';
+import 'package:firedart/firedart.dart';
 
-import 'function_get_room_bookings.dart';
-import 'function_helpers.dart';
+import 'helpers.dart';
 
 class Book {
   Future<Response> book(Request request) async {
@@ -28,13 +27,12 @@ class Book {
 
       String path = 'buildings/$building/rooms/$room/bookings/$date';
 
-      Map<String, dynamic> bookings =
-          json.decode(await GetRoomBookings().getDocument(path));
+      Map<String, dynamic> bookings = await Helpers().getDocument(path);
 
       int start = timeSlotToInt(startTime);
 
       for (int i = start; i < (start + duration); i++) {
-        String slot = HelperFunctions().intToTimeSlot(i);
+        String slot = Helpers().intToTimeSlot(i);
 
         if (bookings[slot]['available'] == true) {
           if (bookings[slot]['booked'] == true) {
@@ -63,7 +61,7 @@ class Book {
       }
 
       for (int i = start; i < (start + duration); i++) {
-        String slot = HelperFunctions().intToTimeSlot(i);
+        String slot = Helpers().intToTimeSlot(i);
         bookings[slot]['booked'] = true;
         bookings[slot]['booker'] = booker;
       }
@@ -79,8 +77,8 @@ class Book {
         'people': people,
         'description': description,
         'from': startTime,
-        'to':
-            HelperFunctions().intToTimeSlot(timeSlotToInt(startTime) + duration)
+        'to': Helpers().intToTimeSlot(timeSlotToInt(startTime) + duration),
+        'deletedFromFeed': false,
       };
 
       await Firestore.instance.document(userPath).create(bookingDetails);

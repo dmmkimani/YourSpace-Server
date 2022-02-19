@@ -5,10 +5,10 @@ import 'package:http/http.dart' as http;
 
 import 'package:firedart/firedart.dart';
 
-import 'function_helpers.dart';
+import 'helpers.dart';
 
 class GetUserBookings {
-  Future<Response> getBookings(Request request) async {
+  Future<Response> get(Request request) async {
     return await request
         .readAsString(request.encoding)
         .then((String jsonString) async {
@@ -44,26 +44,20 @@ class GetUserBookings {
       }
       */
 
-      return Response.ok(await getCollection(path));
+      List<Document> documents = await Helpers().getCollection(path);
+
+      Map<String, dynamic> userBookings = {};
+
+      for (int i = 0; i < documents.length; i++) {
+        Document booking = documents[i];
+        String date = booking.path.split(path + '/')[1];
+        Map<String, dynamic> details = booking.map;
+        if (!details['deletedFromFeed']) {
+          userBookings[date] = details;
+        }
+      }
+
+      return Response.ok(json.encode(userBookings));
     });
-  }
-
-  Future<String> getCollection(String path) async {
-    List<Document> documents = await Firestore.instance
-        .collection(path)
-        .get()
-        .then((Page<Document> collection) => collection.toList());
-
-    Map<String, dynamic> userBookings = {};
-
-    for (int i = 0; i < documents.length; i++) {
-      Document booking = documents[i];
-      String date = booking.path.split(path + '/')[1];
-      Map<String, dynamic> details = booking.map;
-      userBookings[date] = details;
-    }
-
-    String bookings = json.encode(userBookings);
-    return bookings;
   }
 }

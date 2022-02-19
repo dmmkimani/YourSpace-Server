@@ -3,7 +3,8 @@ import 'dart:convert';
 import 'package:shelf/shelf.dart';
 import 'package:http/http.dart' as http;
 
-import 'function_helpers.dart';
+import 'helpers.dart';
+import 'helpers_login.dart';
 
 class Login {
   Future<Response> login(Request request) async {
@@ -14,14 +15,14 @@ class Login {
       String? email = loginInfo['email'].toString();
       String? password = loginInfo['password'].toString();
 
-      if (HelperFunctions().areInputsEmpty([email, password])) {
+      if (LoginHelpers().areInputsEmpty([email, password])) {
         return Response.forbidden(
             json.encode('Please complete your account details'));
       }
 
       String endpoint =
           "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=" +
-              HelperFunctions().getAPI();
+              Helpers().getAPI();
 
       http.Response response = await http.post(Uri.parse(endpoint),
           headers: {'Content-type': 'application/json'},
@@ -61,7 +62,7 @@ class Login {
       }
 
       String uid = responseBody['localId'];
-      String token = HelperFunctions().createToken(uid);
+      String token = LoginHelpers().createToken(uid);
 
       return Response.ok(json.encode(token));
     });

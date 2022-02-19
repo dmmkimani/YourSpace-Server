@@ -1,10 +1,6 @@
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 
-class HelperFunctions {
-  String getAPI() {
-    return "AIzaSyDxTkqc6xYLR3PibbQhq3ORw2uzBgeUGQc";
-  }
-
+class LoginHelpers {
   String createToken(String uid) {
     final String serviceAccountEmail = 'firebase-adminsdk-nct8x@wall-mounted-room-calendar.iam.gserviceaccount.com';
     String aud = 'https://identitytoolkit.googleapis.com/google.identity.identitytoolkit.v1.IdentityToolkit';
@@ -31,15 +27,6 @@ class HelperFunctions {
       }
     }
     return false;
-  }
-
-  String intToTimeSlot(int i) {
-    String time = i.toString();
-    if (time.length == 2) {
-      return time + ':00';
-    } else {
-      return '0' + time + ':00';
-    }
   }
 
   String getPrivateKey() {
