@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:shelf/shelf.dart';
+import 'package:firedart/firedart.dart';
 import 'helpers.dart';
 
 class GetRoomDetails {
@@ -12,8 +13,8 @@ class GetRoomDetails {
       String room = body['room'].toString();
 
       String path = 'buildings/$building/rooms/$room';
-
-      Map<String, dynamic> roomDetails = await Helpers().getDocument(path);
+      Document roomDoc = await Helpers().getDocument(path);
+      Map<String, dynamic> roomDetails = roomDoc.map;
 
       return Response.ok(json.encode(roomDetails));
     });

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:shelf/shelf.dart';
+import 'package:firedart/firedart.dart';
 import 'helpers.dart';
 
 class GetBuildingName {
@@ -11,7 +12,8 @@ class GetBuildingName {
 
       String path = 'buildings/$building';
 
-      Map<String, dynamic> buildingDetails = await Helpers().getDocument(path);
+      Document buildingDoc = await Helpers().getDocument(path);
+      Map<String, dynamic> buildingDetails = buildingDoc.map;
 
       return Response.ok(json.encode(buildingDetails['name']));
     });

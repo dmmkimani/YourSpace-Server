@@ -41,7 +41,8 @@ class GetRoomBookings {
             return Response.notFound(json.encode('Something went wrong!'));
         }
       }
-      return Response.ok(json.encode(await Helpers().getDocument(path)));
+      Document bookingsDoc = await Helpers().getDocument(path);
+      return Response.ok(json.encode(bookingsDoc.map));
     });
   }
 

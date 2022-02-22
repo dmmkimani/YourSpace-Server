@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:shelf/shelf.dart';
-import 'package:http/http.dart' as http;
 
 import 'package:firedart/firedart.dart';
 
@@ -17,47 +16,33 @@ class GetUserBookings {
 
       String path = 'users/$userEmail/bookings';
 
-      // This bit of code checks for a document, not a collection
-
-      /*
-      String endpoint =
-          'https://firestore.googleapis.com/v1/projects/wall-mounted-room-calendar/databases/(default)/documents/' +
-              path +
-              '?key=' +
-              HelperFunctions().getAPI();
-
-      http.Response response = await http.get(Uri.parse(endpoint),
-          headers: {'Content-type': 'application/json'});
-
-      Map<String, dynamic> responseBody = json.decode(response.body);
-
-      if (responseBody.containsKey('error')) {
-        Map<String, dynamic> errorDetails = responseBody['error'];
-        String status = errorDetails['status'];
-        switch (status) {
-          case 'NOT_FOUND':
-            return Response.notFound('No bookings exist');
-
-          default:
-            return Response.notFound('Something went wrong!');
-        }
-      }
-      */
-
       List<Document> documents = await Helpers().getCollection(path);
 
-      Map<String, dynamic> userBookings = {};
+      if (documents.isEmpty) {
+        return Response.notFound(json.encode('No bookings found'));
+      } else {
+        Map<String, dynamic> userBookings = {};
 
-      for (int i = 0; i < documents.length; i++) {
-        Document booking = documents[i];
-        String date = booking.path.split(path + '/')[1];
-        Map<String, dynamic> details = booking.map;
-        if (!details['deletedFromFeed']) {
-          userBookings[date] = details;
+        for (int i = 0; i < documents.length; i++) {
+          Document bookingDate = documents[i];
+          String date = bookingDate.path.split(path + '/')[1];
+          List<dynamic> bookings = bookingDate.map['bookings'];
+          for (int j = 0; j < bookings.length; j++) {
+            Map<String, dynamic> details = bookings[j];
+            if (!details['deletedFromHistory']) {
+              String startTime = details['from'];
+              String dateTime = '$date-$startTime';
+              userBookings[dateTime] = details;
+            }
+          }
+        }
+
+        if (userBookings.isEmpty) {
+          return Response.notFound(json.encode('All bookings deleted from history'));
+        } else {
+          return Response.ok(json.encode(userBookings));
         }
       }
-
-      return Response.ok(json.encode(userBookings));
     });
   }
 }

@@ -51,13 +51,14 @@ class CreateAccount {
                 .encode('Your password must be at least 6 characters long'));
 
           default:
-            return Response.forbidden(json.encode('Some other error'));
+            return Response.forbidden(json.encode('An error occurred!'));
         }
       }
 
       await Firestore.instance
           .document('users/$email')
           .create({'admin': false, 'fName': fName, 'lName': lName});
+
 
       String uid = responseBody['localId'];
       String token = LoginHelpers().createToken(uid);

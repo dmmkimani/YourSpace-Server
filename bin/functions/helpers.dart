@@ -5,13 +5,17 @@ class Helpers {
     return "AIzaSyDxTkqc6xYLR3PibbQhq3ORw2uzBgeUGQc";
   }
 
-  Future<Map<String, dynamic>> getDocument(String path) async {
+  Future<Document> getDocument(String path) async {
+    /*
     Map<String, dynamic> documentMap = await Firestore.instance
         .document(path)
         .get()
         .then((Document document) => document.map);
+    */
 
-    return documentMap;
+    Document document = await Firestore.instance.document(path).get();
+
+    return document;
   }
 
   Future<List<Document>> getCollection(String path) async {

@@ -1,7 +1,8 @@
 import 'dart:convert';
-
 import 'package:shelf/shelf.dart';
+
 import 'package:firedart/firedart.dart';
+import 'package:uuid/uuid.dart';
 
 import 'helpers.dart';
 
@@ -22,12 +23,13 @@ class Book {
 
       if (people == '' || description == '') {
         return Response.forbidden(
-            'Please fill in all the details of your booking');
+            json.encode('Please fill in all the details of your booking'));
       }
 
       String path = 'buildings/$building/rooms/$room/bookings/$date';
 
-      Map<String, dynamic> bookings = await Helpers().getDocument(path);
+      Document roomDoc = await Helpers().getDocument(path);
+      Map<String, dynamic> bookings = roomDoc.map;
 
       int start = timeSlotToInt(startTime);
 
@@ -72,16 +74,30 @@ class Book {
       String userPath = 'users/$booker/bookings/$date';
 
       Map<String, dynamic> bookingDetails = {
+        'id': Uuid().v4(),
         'building': building,
         'room': room,
         'people': people,
         'description': description,
         'from': startTime,
         'to': Helpers().intToTimeSlot(timeSlotToInt(startTime) + duration),
-        'deletedFromFeed': false,
+        'deletedFromHistory': false,
       };
 
-      await Firestore.instance.document(userPath).create(bookingDetails);
+      if (await Firestore.instance.document(userPath).exists) {
+        Document userDoc = await Helpers().getDocument(userPath);
+        List<dynamic> userBookings = userDoc.map['bookings'];
+        userBookings = userBookings.toList();
+        userBookings.add(bookingDetails);
+        await Firestore.instance.document(userPath).delete();
+        await Firestore.instance
+            .document(userPath)
+            .create({'bookings': userBookings});
+      } else {
+        await Firestore.instance.document(userPath).create({
+          'bookings': [bookingDetails]
+        });
+      }
 
       return Response.ok(json.encode('Booking successful!\nEnjoy your space!'));
     });
