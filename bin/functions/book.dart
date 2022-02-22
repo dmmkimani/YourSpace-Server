@@ -12,10 +12,10 @@ class Book {
         .readAsString(request.encoding)
         .then((String jsonString) async {
       Map<String, dynamic> body = json.decode(jsonString);
-      String booker = body['booker'].toString();
-      String date = body['date'].toString();
+      String userEmail = body['userEmail'].toString();
       String building = body['building'].toString();
       String room = body['room'].toString();
+      String date = body['date'].toString();
       String people = body['people'].toString();
       String description = body['description'].toString();
       String startTime = body['startTime'].toString();
@@ -23,27 +23,31 @@ class Book {
 
       if (people == '' || description == '') {
         return Response.forbidden(
-            json.encode('Please fill in all the details of your booking'));
+            json.encode('Please fill in all the details of your booking.'));
       }
 
       String path = 'buildings/$building/rooms/$room/bookings/$date';
 
+      //
+      // NEED TO CHECK IF THE DOCUMENT EXISTS FIRST
+      //
+
       Document roomDoc = await Helpers().getDocument(path);
       Map<String, dynamic> bookings = roomDoc.map;
 
-      int start = timeSlotToInt(startTime);
+      int startHour = Helpers().timeSlotToInt(startTime);
 
-      for (int i = start; i < (start + duration); i++) {
-        String slot = Helpers().intToTimeSlot(i);
+      for (int i = startHour; i < (startHour + duration); i++) {
+        String timeSlot = Helpers().intToTimeSlot(i);
 
-        if (bookings[slot]['available'] == true) {
-          if (bookings[slot]['booked'] == true) {
-            return Response.forbidden(
-                json.encode('Unfortunately, the room is reserved at ' + slot));
+        if (bookings[timeSlot]['available'] == true) {
+          if (bookings[timeSlot]['booked'] == true) {
+            return Response.forbidden(json
+                .encode('Unfortunately, the room is reserved at $timeSlot.'));
           }
         } else {
-          return Response.forbidden(
-              json.encode('Unfortunately, the room is unavailable at ' + slot));
+          return Response.forbidden(json
+              .encode('Unfortunately, the room is unavailable at $timeSlot.'));
         }
       }
 
@@ -54,24 +58,24 @@ class Book {
 
       if (int.parse(people) > int.parse(roomDetails['capacity'])) {
         return Response.forbidden(json.encode(
-            'This room can only hold ' + roomDetails['capacity'] + ' people'));
+            'This room can only hold ' + roomDetails['capacity'] + ' people.'));
       }
 
       if (duration <= 0) {
         return Response.forbidden(
-            json.encode('A booking must be a minimum of 1 hour'));
+            json.encode('A booking must be a minimum of 1 hour.'));
       }
 
-      for (int i = start; i < (start + duration); i++) {
-        String slot = Helpers().intToTimeSlot(i);
-        bookings[slot]['booked'] = true;
-        bookings[slot]['booker'] = booker;
+      for (int i = startHour; i < (startHour + duration); i++) {
+        String timeSlot = Helpers().intToTimeSlot(i);
+        bookings[timeSlot]['booked'] = true;
+        bookings[timeSlot]['booker'] = userEmail;
       }
 
       await Firestore.instance.document(path).delete();
       await Firestore.instance.document(path).create(bookings);
 
-      String userPath = 'users/$booker/bookings/$date';
+      String userPath = 'users/$userEmail/bookings/$date';
 
       Map<String, dynamic> bookingDetails = {
         'id': Uuid().v4(),
@@ -79,8 +83,9 @@ class Book {
         'room': room,
         'people': people,
         'description': description,
-        'from': startTime,
-        'to': Helpers().intToTimeSlot(timeSlotToInt(startTime) + duration),
+        'startTime': startTime,
+        'endTime': Helpers()
+            .intToTimeSlot(Helpers().timeSlotToInt(startTime) + duration),
         'deletedFromHistory': false,
       };
 
@@ -103,14 +108,10 @@ class Book {
     });
   }
 
-  int timeSlotToInt(String timeSlot) {
-    return int.parse(timeSlot.split(':')[0]);
-  }
-
   int getLatestTimeSlot(Map<String, dynamic> bookings) {
     int latestTimeSlot = 0;
     bookings.forEach((timeSlot, data) {
-      int currentTimeSlot = timeSlotToInt(timeSlot);
+      int currentTimeSlot = Helpers().timeSlotToInt(timeSlot);
       if (currentTimeSlot > latestTimeSlot) {
         latestTimeSlot = currentTimeSlot;
       }

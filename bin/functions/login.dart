@@ -17,7 +17,7 @@ class Login {
 
       if (LoginHelpers().areInputsEmpty([email, password])) {
         return Response.forbidden(
-            json.encode('Please complete your account details'));
+            json.encode('Please complete your account details.'));
       }
 
       String endpoint =
@@ -39,25 +39,25 @@ class Login {
         String message = errorDetails['message'];
         switch (message) {
           case 'EMAIL_NOT_FOUND':
-            return Response.forbidden(json.encode('That user does not exist'));
+            return Response.forbidden(json.encode('That user does not exist.'));
 
           case 'INVALID_PASSWORD':
             return Response.forbidden(json.encode(
-                'Please enter a valid email address and password combination'));
+                'Please enter a valid email address and password combination.'));
 
           case 'USER_DISABLED':
             return Response.forbidden(
-                json.encode('That user account has been disabled'));
+                json.encode('That user account has been disabled.'));
 
           case 'INVALID_EMAIL':
             return Response.forbidden(
-                json.encode('Please enter a valid email address'));
+                json.encode('Please enter a valid email address.'));
 
           default:
             return Response.forbidden(json.encode(
                 'Access to this account has been temporarily disabled due to many '
                 'failed login attempts. You can immediately restore it by resetting '
-                'your password or you can try again later'));
+                'your password or you can try again later.'));
         }
       }
 

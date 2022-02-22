@@ -21,7 +21,7 @@ class CreateAccount {
 
       if (LoginHelpers().areInputsEmpty([fName, lName, email, password])) {
         return Response.forbidden(
-            json.encode('Please fill in all the text fields'));
+            json.encode('Please fill in all the text fields.'));
       }
 
       String endpoint =
@@ -44,11 +44,11 @@ class CreateAccount {
         switch (message) {
           case 'EMAIL_EXISTS':
             return Response.forbidden(json.encode(
-                'That email address is already in use by another account'));
+                'That email address is already in use by another account.'));
 
           case 'WEAK_PASSWORD : Password should be at least 6 characters':
             return Response.forbidden(json
-                .encode('Your password must be at least 6 characters long'));
+                .encode('Your password must be at least 6 characters long.'));
 
           default:
             return Response.forbidden(json.encode('An error occurred!'));

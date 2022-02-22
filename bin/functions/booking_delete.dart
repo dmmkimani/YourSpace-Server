@@ -4,7 +4,7 @@ import 'package:firedart/firedart.dart';
 import 'helpers.dart';
 
 class DeleteFromHistory {
-  Future<void> delete(Request request) async {
+  Future<Response> delete(Request request) async {
     return await request
         .readAsString(request.encoding)
         .then((String jsonString) async {
@@ -29,6 +29,9 @@ class DeleteFromHistory {
 
       await Firestore.instance.document(path).delete();
       await Firestore.instance.document(path).create({'bookings': bookings});
+
+
+      return Response.ok(null);
     });
   }
 }

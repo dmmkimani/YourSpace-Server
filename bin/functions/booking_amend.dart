@@ -19,7 +19,7 @@ class AmendBooking {
 
       if (people == '' || description == '') {
         return Response.forbidden(
-            json.encode('Please fill in all the details of your booking'));
+            json.encode('Please fill in all the details of your booking.'));
       }
 
       String roomPath = 'buildings/$building/rooms/$room';
@@ -28,14 +28,14 @@ class AmendBooking {
 
       if (int.parse(people) > int.parse(roomDetails['capacity'])) {
         return Response.forbidden(json.encode(room.toUpperCase() +
-            'can only hold ' +
+            ' can only hold ' +
             roomDetails['capacity'] +
-            ' people'));
+            ' people.'));
       }
 
-      String path = 'users/$userEmail/bookings/$date';
+      String userPath = 'users/$userEmail/bookings/$date';
 
-      Document bookingDocument = await Helpers().getDocument(path);
+      Document bookingDocument = await Helpers().getDocument(userPath);
       List<dynamic> bookings = bookingDocument.map['bookings'];
       bookings = bookings.toList();
 
@@ -48,10 +48,10 @@ class AmendBooking {
         }
       }
 
-      await Firestore.instance.document(path).delete();
-      await Firestore.instance.document(path).create({'bookings': bookings});
+      await Firestore.instance.document(userPath).delete();
+      await Firestore.instance.document(userPath).create({'bookings': bookings});
 
-      return Response.ok(json.encode('Booking amended'));
+      return Response.ok(json.encode('Booking amended.'));
     });
   }
 }

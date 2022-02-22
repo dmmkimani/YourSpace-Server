@@ -7,6 +7,7 @@ import 'package:firedart/firedart.dart';
 
 import 'functions/book.dart';
 import 'functions/booking_amend.dart';
+import 'functions/booking_cancel.dart';
 import 'functions/create_account.dart';
 import 'functions/booking_delete.dart';
 import 'functions/get_building_name.dart';
@@ -24,6 +25,7 @@ final _router = Router()
   ..post('/user_bookings', _getUserBookings)
   ..post('/book', _book)
   ..post('/amend', _amendBooking)
+  ..post('/cancel', _cancelBooking)
   ..post('/delete', _deleteFromHistory);
 
 Future<Response> _createAccount(Request request) async {
@@ -58,7 +60,11 @@ Future<Response> _amendBooking(Request request) async {
   return AmendBooking().amend(request);
 }
 
-Future<void> _deleteFromHistory(Request request) async {
+Future<Response> _cancelBooking(Request request) async {
+  return CancelBooking().cancel(request);
+}
+
+Future<Response> _deleteFromHistory(Request request) async {
   return DeleteFromHistory().delete(request);
 }
 

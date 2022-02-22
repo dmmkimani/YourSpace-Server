@@ -30,7 +30,7 @@ class GetUserBookings {
           for (int j = 0; j < bookings.length; j++) {
             Map<String, dynamic> details = bookings[j];
             if (!details['deletedFromHistory']) {
-              String startTime = details['from'];
+              String startTime = details['startTime'];
               String dateTime = '$date-$startTime';
               userBookings[dateTime] = details;
             }

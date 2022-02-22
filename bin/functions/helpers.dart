@@ -35,4 +35,8 @@ class Helpers {
       return '0' + time + ':00';
     }
   }
+
+  int timeSlotToInt(String timeSlot) {
+    return int.parse(timeSlot.split(':')[0]);
+  }
 }
