@@ -17,9 +17,10 @@ class CancelBooking {
       String startTime = body['startTime'].toString();
       int duration = body['duration'];
 
-      String userPath = 'users/$userEmail/bookings/$date';
-      Document userDoc = await Helpers().getDocument(userPath);
-      List<dynamic> userBookings = userDoc.map['bookings'];
+      String userBookingsPath = 'users/$userEmail/bookings/$date';
+      List<dynamic> userBookings = await Helpers()
+          .getDocument(userBookingsPath)
+          .then((Map<String, dynamic> documentMap) => documentMap['bookings']);
       userBookings = userBookings.toList();
 
       for (int i = 0; i < userBookings.length; i++) {
@@ -29,8 +30,7 @@ class CancelBooking {
       }
 
       String roomPath = 'buildings/$building/rooms/$room/bookings/$date';
-      Document roomDoc = await Helpers().getDocument(roomPath);
-      Map<String, dynamic> roomBookings = roomDoc.map;
+      Map<String, dynamic> roomBookings = await Helpers().getDocument(roomPath);
 
       int startHour = Helpers().timeSlotToInt(startTime);
 
@@ -42,10 +42,16 @@ class CancelBooking {
         roomBookings[timeSlot] = slotInfo;
       }
 
-      await Firestore.instance.document(userPath).delete();
+      String userInfoPath = 'users/$userEmail';
+      Map<String, dynamic> userInfo = await Helpers().getDocument(userInfoPath);
+      int numBookings = userInfo['numBookings'];
+      numBookings--;
+      userInfo['numBookings'] = numBookings;
+      await Firestore.instance.document(userInfoPath).update(userInfo);
+
       await Firestore.instance
-          .document(userPath)
-          .create({'bookings': userBookings});
+          .document(userBookingsPath)
+          .update({'bookings': userBookings});
 
       await Firestore.instance.document(roomPath).delete();
       await Firestore.instance.document(roomPath).create(roomBookings);

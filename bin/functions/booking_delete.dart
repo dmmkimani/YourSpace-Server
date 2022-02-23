@@ -15,8 +15,9 @@ class DeleteFromHistory {
 
       String path = 'users/$userEmail/bookings/$date';
 
-      Document bookingDocument = await Helpers().getDocument(path);
-      List<dynamic> bookings = bookingDocument.map['bookings'];
+      List<dynamic> bookings = await Helpers()
+          .getDocument(path)
+          .then((Map<String, dynamic> documentMap) => documentMap['bookings']);
       bookings = bookings.toList();
 
       for (int i = 0; i < bookings.length; i++) {
@@ -27,9 +28,7 @@ class DeleteFromHistory {
         }
       }
 
-      await Firestore.instance.document(path).delete();
-      await Firestore.instance.document(path).create({'bookings': bookings});
-
+      await Firestore.instance.document(path).update({'bookings': bookings});
 
       return Response.ok(null);
     });

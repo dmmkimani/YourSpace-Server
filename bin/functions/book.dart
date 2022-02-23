@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:shelf/shelf.dart';
-
 import 'package:firedart/firedart.dart';
 import 'package:uuid/uuid.dart';
 
@@ -26,14 +25,15 @@ class Book {
             json.encode('Please fill in all the details of your booking.'));
       }
 
-      String path = 'buildings/$building/rooms/$room/bookings/$date';
+      String roomBookingsPath =
+          'buildings/$building/rooms/$room/bookings/$date';
 
       //
       // NEED TO CHECK IF THE DOCUMENT EXISTS FIRST
       //
 
-      Document roomDoc = await Helpers().getDocument(path);
-      Map<String, dynamic> bookings = roomDoc.map;
+      Map<String, dynamic> bookings =
+          await Helpers().getDocument(roomBookingsPath);
 
       int startHour = Helpers().timeSlotToInt(startTime);
 
@@ -51,10 +51,8 @@ class Book {
         }
       }
 
-      Map<String, dynamic> roomDetails = await Firestore.instance
-          .document('buildings/$building/rooms/$room')
-          .get()
-          .then((Document document) => document.map);
+      Map<String, dynamic> roomDetails =
+          await Helpers().getDocument('buildings/$building/rooms/$room');
 
       if (int.parse(people) > int.parse(roomDetails['capacity'])) {
         return Response.forbidden(json.encode(
@@ -72,10 +70,7 @@ class Book {
         bookings[timeSlot]['booker'] = userEmail;
       }
 
-      await Firestore.instance.document(path).delete();
-      await Firestore.instance.document(path).create(bookings);
-
-      String userPath = 'users/$userEmail/bookings/$date';
+      String userBookingsPath = 'users/$userEmail/bookings/$date';
 
       Map<String, dynamic> bookingDetails = {
         'id': Uuid().v4(),
@@ -89,20 +84,32 @@ class Book {
         'deletedFromHistory': false,
       };
 
-      if (await Firestore.instance.document(userPath).exists) {
-        Document userDoc = await Helpers().getDocument(userPath);
-        List<dynamic> userBookings = userDoc.map['bookings'];
+      await Firestore.instance.document(roomBookingsPath).delete();
+      await Firestore.instance.document(roomBookingsPath).create(bookings);
+
+      if (await Firestore.instance.document(userBookingsPath).exists) {
+        List<dynamic> userBookings = await Helpers()
+            .getDocument(userBookingsPath)
+            .then(
+                (Map<String, dynamic> documentMap) => documentMap['bookings']);
+
         userBookings = userBookings.toList();
         userBookings.add(bookingDetails);
-        await Firestore.instance.document(userPath).delete();
         await Firestore.instance
-            .document(userPath)
-            .create({'bookings': userBookings});
+            .document(userBookingsPath)
+            .update({'bookings': userBookings});
       } else {
-        await Firestore.instance.document(userPath).create({
+        await Firestore.instance.document(userBookingsPath).create({
           'bookings': [bookingDetails]
         });
       }
+
+      String userInfoPath = 'users/$userEmail';
+      Map<String, dynamic> userInfo = await Helpers().getDocument(userInfoPath);
+      int numBookings = userInfo['numBookings'];
+      numBookings++;
+      userInfo['numBookings'] = numBookings;
+      await Firestore.instance.document(userInfoPath).update(userInfo);
 
       return Response.ok(json.encode('Booking successful!\nEnjoy your space!'));
     });

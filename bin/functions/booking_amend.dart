@@ -23,8 +23,7 @@ class AmendBooking {
       }
 
       String roomPath = 'buildings/$building/rooms/$room';
-      Document roomDoc = await Helpers().getDocument(roomPath);
-      Map<String, dynamic> roomDetails = roomDoc.map;
+      Map<String, dynamic> roomDetails = await Helpers().getDocument(roomPath);
 
       if (int.parse(people) > int.parse(roomDetails['capacity'])) {
         return Response.forbidden(json.encode(room.toUpperCase() +
@@ -35,8 +34,9 @@ class AmendBooking {
 
       String userPath = 'users/$userEmail/bookings/$date';
 
-      Document bookingDocument = await Helpers().getDocument(userPath);
-      List<dynamic> bookings = bookingDocument.map['bookings'];
+      List<dynamic> bookings = await Helpers()
+          .getDocument(userPath)
+          .then((Map<String, dynamic> documentMap) => documentMap['bookings']);
       bookings = bookings.toList();
 
       for (int i = 0; i < bookings.length; i++) {
@@ -48,8 +48,9 @@ class AmendBooking {
         }
       }
 
-      await Firestore.instance.document(userPath).delete();
-      await Firestore.instance.document(userPath).create({'bookings': bookings});
+      await Firestore.instance
+          .document(userPath)
+          .update({'bookings': bookings});
 
       return Response.ok(json.encode('Booking amended.'));
     });

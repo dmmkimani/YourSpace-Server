@@ -12,8 +12,7 @@ class GetBuildingName {
 
       String path = 'buildings/$building';
 
-      Document buildingDoc = await Helpers().getDocument(path);
-      Map<String, dynamic> buildingDetails = buildingDoc.map;
+      Map<String, dynamic> buildingDetails = await Helpers().getDocument(path);
 
       return Response.ok(json.encode(buildingDetails['name']));
     });

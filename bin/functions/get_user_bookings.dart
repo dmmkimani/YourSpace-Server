@@ -1,9 +1,6 @@
 import 'dart:convert';
-
 import 'package:shelf/shelf.dart';
-
 import 'package:firedart/firedart.dart';
-
 import 'helpers.dart';
 
 class GetUserBookings {
@@ -11,11 +8,9 @@ class GetUserBookings {
     return await request
         .readAsString(request.encoding)
         .then((String jsonString) async {
-      Map<String, dynamic> body = json.decode(jsonString);
-      String userEmail = body['userEmail'].toString();
+      String userEmail = json.decode(jsonString);
 
       String path = 'users/$userEmail/bookings';
-
       List<Document> documents = await Helpers().getCollection(path);
 
       if (documents.isEmpty) {

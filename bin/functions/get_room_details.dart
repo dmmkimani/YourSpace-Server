@@ -12,9 +12,8 @@ class GetRoomDetails {
       String building = body['building'].toString();
       String room = body['room'].toString();
 
-      String path = 'buildings/$building/rooms/$room';
-      Document roomDoc = await Helpers().getDocument(path);
-      Map<String, dynamic> roomDetails = roomDoc.map;
+      Map<String, dynamic> roomDetails =
+          await Helpers().getDocument('buildings/$building/rooms/$room');
 
       return Response.ok(json.encode(roomDetails));
     });

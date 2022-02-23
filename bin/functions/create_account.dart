@@ -55,10 +55,8 @@ class CreateAccount {
         }
       }
 
-      await Firestore.instance
-          .document('users/$email')
-          .create({'admin': false, 'fName': fName, 'lName': lName});
-
+      await Firestore.instance.document('users/$email').create(
+          {'admin': false, 'fName': fName, 'lName': lName, 'numBookings': 0});
 
       String uid = responseBody['localId'];
       String token = LoginHelpers().createToken(uid);
