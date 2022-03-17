@@ -42,19 +42,14 @@ class CancelBooking {
         roomBookings[timeSlot] = slotInfo;
       }
 
-      String userInfoPath = 'users/$userEmail';
-      Map<String, dynamic> userInfo = await Helpers().getDocument(userInfoPath);
-      int numBookings = userInfo['numBookings'];
-      numBookings--;
-      userInfo['numBookings'] = numBookings;
-      await Firestore.instance.document(userInfoPath).update(userInfo);
-
       await Firestore.instance
           .document(userBookingsPath)
           .update({'bookings': userBookings});
 
       await Firestore.instance.document(roomPath).delete();
       await Firestore.instance.document(roomPath).create(roomBookings);
+
+      Helpers().updateNumBookings(userEmail);
 
       return Response.ok(null);
     });

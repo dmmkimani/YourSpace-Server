@@ -1,9 +1,8 @@
 import 'dart:convert';
 import 'package:shelf/shelf.dart';
-import 'package:firedart/firedart.dart';
 import 'helpers.dart';
 
-class GetBuildingName {
+class GetBuildingDetails {
   Future<Response> get(Request request) async {
     return await request
         .readAsString(request.encoding)
@@ -14,7 +13,7 @@ class GetBuildingName {
 
       Map<String, dynamic> buildingDetails = await Helpers().getDocument(path);
 
-      return Response.ok(json.encode(buildingDetails['name']));
+      return Response.ok(json.encode(buildingDetails));
     });
   }
 }

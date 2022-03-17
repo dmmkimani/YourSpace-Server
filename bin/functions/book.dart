@@ -104,12 +104,7 @@ class Book {
         });
       }
 
-      String userInfoPath = 'users/$userEmail';
-      Map<String, dynamic> userInfo = await Helpers().getDocument(userInfoPath);
-      int numBookings = userInfo['numBookings'];
-      numBookings++;
-      userInfo['numBookings'] = numBookings;
-      await Firestore.instance.document(userInfoPath).update(userInfo);
+      Helpers().updateNumBookings(userEmail);
 
       return Response.ok(json.encode('Booking successful!\nEnjoy your space!'));
     });

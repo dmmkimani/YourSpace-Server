@@ -23,6 +23,25 @@ class Helpers {
     return documents;
   }
 
+  void updateNumBookings(String userEmail) async {
+    String bookingsPath = 'users/$userEmail/bookings';
+    List<Document> documents = await Helpers().getCollection(bookingsPath);
+
+    int numBookings = 0;
+
+    for (int i = 0; i < documents.length; i++) {
+      Document bookingDate = documents[i];
+      List<dynamic> bookings = bookingDate.map['bookings'];
+      numBookings += bookings.length;
+    }
+
+    String userPath = 'users/$userEmail';
+    Map<String, dynamic> userDetails = await getDocument(userPath);
+    userDetails['numBookings'] = numBookings;
+
+    await Firestore.instance.document(userPath).update(userDetails);
+  }
+
   String intToTimeSlot(int i) {
     String time = i.toString();
     if (time.length == 2) {

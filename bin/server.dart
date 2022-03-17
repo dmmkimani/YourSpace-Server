@@ -20,7 +20,7 @@ import 'functions/login.dart';
 final _router = Router()
   ..post('/create_account', createAccount)
   ..post('/login', login)
-  ..post('/building_name', getBuildingName)
+  ..post('/building_details', getBuildingDetails)
   ..post('/room_details', getRoomDetails)
   ..post('/room_bookings', getRoomBookings)
   ..post('/user_info', getUserInfo)
@@ -38,8 +38,8 @@ Future<Response> login(Request request) async {
   return Login().login(request);
 }
 
-Future<Response> getBuildingName(Request request) async {
-  return GetBuildingName().get(request);
+Future<Response> getBuildingDetails(Request request) async {
+  return GetBuildingDetails().get(request);
 }
 
 Future<Response> getRoomDetails(Request request) async {
