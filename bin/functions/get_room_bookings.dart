@@ -23,7 +23,7 @@ class GetRoomBookings {
           'https://firestore.googleapis.com/v1/projects/wall-mounted-room-calendar/databases/(default)/documents/' +
               path +
               '?key=' +
-              Helpers().getAPI();
+              await Helpers().getAPI();
 
       http.Response response = await http.get(Uri.parse(endpoint),
           headers: {'Content-type': 'application/json'});

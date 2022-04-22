@@ -1,8 +1,9 @@
 import 'package:firedart/firedart.dart';
 
 class Helpers {
-  String getAPI() {
-    return "AIzaSyDxTkqc6xYLR3PibbQhq3ORw2uzBgeUGQc";
+  Future<String> getAPI() async {
+    Map<String, dynamic> apiDocument = await getDocument('app/api');
+    return apiDocument['key'];
   }
 
   Future<Map<String, dynamic>> getDocument(String path) async {

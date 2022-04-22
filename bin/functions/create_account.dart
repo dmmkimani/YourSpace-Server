@@ -26,7 +26,7 @@ class CreateAccount {
 
       String endpoint =
           "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=" +
-              Helpers().getAPI();
+              await Helpers().getAPI();
 
       http.Response response = await http.post(Uri.parse(endpoint),
           headers: {'Content-type': 'application/json'},
@@ -59,7 +59,7 @@ class CreateAccount {
           {'admin': false, 'fName': fName, 'lName': lName, 'numBookings': 0});
 
       String uid = responseBody['localId'];
-      String token = LoginHelpers().createToken(uid);
+      String token = await LoginHelpers().createToken(uid);
 
       return Response.ok(token);
     });

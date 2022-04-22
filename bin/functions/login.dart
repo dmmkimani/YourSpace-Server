@@ -22,7 +22,7 @@ class Login {
 
       String endpoint =
           "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=" +
-              Helpers().getAPI();
+              await Helpers().getAPI();
 
       http.Response response = await http.post(Uri.parse(endpoint),
           headers: {'Content-type': 'application/json'},
@@ -62,7 +62,7 @@ class Login {
       }
 
       String uid = responseBody['localId'];
-      String token = LoginHelpers().createToken(uid);
+      String token = await LoginHelpers().createToken(uid);
 
       return Response.ok(json.encode(token));
     });

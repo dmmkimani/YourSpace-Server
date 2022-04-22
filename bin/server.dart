@@ -10,7 +10,7 @@ import 'functions/booking_amend.dart';
 import 'functions/booking_cancel.dart';
 import 'functions/create_account.dart';
 import 'functions/booking_delete.dart';
-import 'functions/get_building_name.dart';
+import 'functions/get_building_details.dart';
 import 'functions/get_room_bookings.dart';
 import 'functions/get_room_details.dart';
 import 'functions/get_user_bookings.dart';
