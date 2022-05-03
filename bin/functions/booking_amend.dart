@@ -23,12 +23,13 @@ class AmendBooking {
       }
 
       if (int.parse(people) < 1) {
-        return Response.forbidden(json.encode(
-            'To make a booking, there needs to be one or more people using the space'));
+        return Response.forbidden(json
+            .encode('There needs to be one or more people using the space.'));
       }
 
       String roomPath = 'buildings/$building/rooms/$room';
-      Map<String, dynamic> roomDetails = await HelperFunctions().getDocument(roomPath);
+      Map<String, dynamic> roomDetails =
+          await HelperFunctions().getDocument(roomPath);
 
       if (int.parse(people) > int.parse(roomDetails['capacity'])) {
         return Response.forbidden(json.encode(room.toUpperCase() +

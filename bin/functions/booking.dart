@@ -27,7 +27,7 @@ class Booking {
 
       if (int.parse(people) < 1) {
         return Response.forbidden(json.encode(
-            'To make a booking, there needs to be one or more people using the space'));
+            'To make a booking, there needs to be one or more people using the space.'));
       }
 
       String roomBookingsPath =
