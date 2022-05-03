@@ -19,14 +19,15 @@ class CreateAccount {
       String email = accountInfo['email'].toString();
       String password = accountInfo['password'].toString();
 
-      if (LoginHelpers().areInputsEmpty([fName, lName, email, password])) {
+      if (LoginHelperFunctions()
+          .areInputsEmpty([fName, lName, email, password])) {
         return Response.forbidden(
             json.encode('Please fill in all the text fields.'));
       }
 
       String endpoint =
           "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=" +
-              await Helpers().getAPI();
+              await HelperFunctions().getAPI();
 
       http.Response response = await http.post(Uri.parse(endpoint),
           headers: {'Content-type': 'application/json'},
@@ -50,6 +51,10 @@ class CreateAccount {
             return Response.forbidden(json
                 .encode('Your password must be at least 6 characters long.'));
 
+          case 'INVALID_EMAIL':
+            return Response.forbidden(
+                json.encode('Please enter a valid email.'));
+
           default:
             return Response.forbidden(json.encode('An error occurred!'));
         }
@@ -59,9 +64,9 @@ class CreateAccount {
           {'admin': false, 'fName': fName, 'lName': lName, 'numBookings': 0});
 
       String uid = responseBody['localId'];
-      String token = await LoginHelpers().createToken(uid);
+      String token = await LoginHelperFunctions().createToken(uid);
 
-      return Response.ok(token);
+      return Response.ok(json.encode(token));
     });
   }
 }

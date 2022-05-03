@@ -10,7 +10,7 @@ class GetUserInfo {
       String userEmail = json.decode(jsonString);
 
       Map<String, dynamic> userInfo =
-          await Helpers().getDocument('users/$userEmail');
+          await HelperFunctions().getDocument('users/$userEmail');
 
       String fullName = userInfo['fName'] + ' ' + userInfo['lName'];
 

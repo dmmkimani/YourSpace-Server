@@ -5,7 +5,7 @@ import 'package:shelf_router/shelf_router.dart';
 
 import 'package:firedart/firedart.dart';
 
-import 'functions/book.dart';
+import 'functions/booking.dart';
 import 'functions/booking_amend.dart';
 import 'functions/booking_cancel.dart';
 import 'functions/create_account.dart';
@@ -59,7 +59,7 @@ Future<Response> getUserBookings(Request request) async {
 }
 
 Future<Response> book(Request request) async {
-  return Book().book(request);
+  return Booking().create(request);
 }
 
 Future<Response> amendBooking(Request request) async {

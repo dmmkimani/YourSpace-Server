@@ -11,7 +11,7 @@ class GetBuildingDetails {
 
       String path = 'buildings/$building';
 
-      Map<String, dynamic> buildingDetails = await Helpers().getDocument(path);
+      Map<String, dynamic> buildingDetails = await HelperFunctions().getDocument(path);
 
       return Response.ok(json.encode(buildingDetails));
     });

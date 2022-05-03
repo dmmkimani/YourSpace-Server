@@ -5,8 +5,8 @@ import 'package:uuid/uuid.dart';
 
 import 'helpers.dart';
 
-class Book {
-  Future<Response> book(Request request) async {
+class Booking {
+  Future<Response> create(Request request) async {
     return await request
         .readAsString(request.encoding)
         .then((String jsonString) async {
@@ -25,20 +25,21 @@ class Book {
             json.encode('Please fill in all the details of your booking.'));
       }
 
+      if (int.parse(people) < 1) {
+        return Response.forbidden(json.encode(
+            'To make a booking, there needs to be one or more people using the space'));
+      }
+
       String roomBookingsPath =
           'buildings/$building/rooms/$room/bookings/$date';
 
-      //
-      // NEED TO CHECK IF THE DOCUMENT EXISTS FIRST
-      //
-
       Map<String, dynamic> bookings =
-          await Helpers().getDocument(roomBookingsPath);
+          await HelperFunctions().getDocument(roomBookingsPath);
 
-      int startHour = Helpers().timeSlotToInt(startTime);
+      int startHour = HelperFunctions().timeSlotToInt(startTime);
 
       for (int i = startHour; i < (startHour + duration); i++) {
-        String timeSlot = Helpers().intToTimeSlot(i);
+        String timeSlot = HelperFunctions().intToTimeSlot(i);
 
         if (bookings[timeSlot]['available'] == true) {
           if (bookings[timeSlot]['booked'] == true) {
@@ -51,8 +52,8 @@ class Book {
         }
       }
 
-      Map<String, dynamic> roomDetails =
-          await Helpers().getDocument('buildings/$building/rooms/$room');
+      Map<String, dynamic> roomDetails = await HelperFunctions()
+          .getDocument('buildings/$building/rooms/$room');
 
       if (int.parse(people) > int.parse(roomDetails['capacity'])) {
         return Response.forbidden(json.encode(
@@ -65,7 +66,7 @@ class Book {
       }
 
       for (int i = startHour; i < (startHour + duration); i++) {
-        String timeSlot = Helpers().intToTimeSlot(i);
+        String timeSlot = HelperFunctions().intToTimeSlot(i);
         bookings[timeSlot]['booked'] = true;
         bookings[timeSlot]['booker'] = userEmail;
       }
@@ -79,8 +80,8 @@ class Book {
         'people': people,
         'description': description,
         'startTime': startTime,
-        'endTime': Helpers()
-            .intToTimeSlot(Helpers().timeSlotToInt(startTime) + duration),
+        'endTime': HelperFunctions().intToTimeSlot(
+            HelperFunctions().timeSlotToInt(startTime) + duration),
         'deletedFromHistory': false,
       };
 
@@ -88,7 +89,7 @@ class Book {
       await Firestore.instance.document(roomBookingsPath).create(bookings);
 
       if (await Firestore.instance.document(userBookingsPath).exists) {
-        List<dynamic> userBookings = await Helpers()
+        List<dynamic> userBookings = await HelperFunctions()
             .getDocument(userBookingsPath)
             .then(
                 (Map<String, dynamic> documentMap) => documentMap['bookings']);
@@ -104,20 +105,9 @@ class Book {
         });
       }
 
-      Helpers().updateNumBookings(userEmail);
+      HelperFunctions().updateNumBookings(userEmail);
 
       return Response.ok(json.encode('Booking successful!\nEnjoy your space!'));
     });
-  }
-
-  int getLatestTimeSlot(Map<String, dynamic> bookings) {
-    int latestTimeSlot = 0;
-    bookings.forEach((timeSlot, data) {
-      int currentTimeSlot = Helpers().timeSlotToInt(timeSlot);
-      if (currentTimeSlot > latestTimeSlot) {
-        latestTimeSlot = currentTimeSlot;
-      }
-    });
-    return latestTimeSlot;
   }
 }

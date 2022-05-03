@@ -15,14 +15,14 @@ class Login {
       String? email = loginInfo['email'].toString();
       String? password = loginInfo['password'].toString();
 
-      if (LoginHelpers().areInputsEmpty([email, password])) {
+      if (LoginHelperFunctions().areInputsEmpty([email, password])) {
         return Response.forbidden(
             json.encode('Please complete your account details.'));
       }
 
       String endpoint =
           "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=" +
-              await Helpers().getAPI();
+              await HelperFunctions().getAPI();
 
       http.Response response = await http.post(Uri.parse(endpoint),
           headers: {'Content-type': 'application/json'},
@@ -62,7 +62,7 @@ class Login {
       }
 
       String uid = responseBody['localId'];
-      String token = await LoginHelpers().createToken(uid);
+      String token = await LoginHelperFunctions().createToken(uid);
 
       return Response.ok(json.encode(token));
     });

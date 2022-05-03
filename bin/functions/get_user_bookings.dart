@@ -11,7 +11,7 @@ class GetUserBookings {
       String userEmail = json.decode(jsonString);
 
       String path = 'users/$userEmail/bookings';
-      List<Document> documents = await Helpers().getCollection(path);
+      List<Document> documents = await HelperFunctions().getCollection(path);
 
       if (documents.isEmpty) {
         return Response.notFound(json.encode('No bookings found'));
@@ -31,7 +31,6 @@ class GetUserBookings {
             }
           }
         }
-
         if (userBookings.isEmpty) {
           return Response.notFound(json.encode('All bookings deleted from history'));
         } else {

@@ -15,7 +15,7 @@ class ForgotPassword {
 
       String endpoint =
           'https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=' +
-              await Helpers().getAPI();
+              await HelperFunctions().getAPI();
 
       http.Response response = await http.post(Uri.parse(endpoint),
           headers: {'Content-type': 'application/json'},

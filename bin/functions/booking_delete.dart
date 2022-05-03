@@ -15,7 +15,7 @@ class DeleteFromHistory {
 
       String path = 'users/$userEmail/bookings/$date';
 
-      List<dynamic> bookings = await Helpers()
+      List<dynamic> bookings = await HelperFunctions()
           .getDocument(path)
           .then((Map<String, dynamic> documentMap) => documentMap['bookings']);
       bookings = bookings.toList();

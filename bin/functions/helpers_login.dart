@@ -1,8 +1,7 @@
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
-
 import 'helpers.dart';
 
-class LoginHelpers {
+class LoginHelperFunctions {
   bool areInputsEmpty(List<String> inputs) {
     for (int i = 0; i < inputs.length; i++) {
       String input = inputs[i];
@@ -14,7 +13,7 @@ class LoginHelpers {
   }
 
   Future<Map<String, dynamic>> getResources() async {
-    Map<String, dynamic> resources = await Helpers().getDocument('app/jwt');
+    Map<String, dynamic> resources = await HelperFunctions().getDocument('app/jwt');
     return resources;
   }
 

@@ -1,6 +1,6 @@
 import 'package:firedart/firedart.dart';
 
-class Helpers {
+class HelperFunctions {
   Future<String> getAPI() async {
     Map<String, dynamic> apiDocument = await getDocument('app/api');
     return apiDocument['key'];
@@ -26,7 +26,7 @@ class Helpers {
 
   void updateNumBookings(String userEmail) async {
     String bookingsPath = 'users/$userEmail/bookings';
-    List<Document> documents = await Helpers().getCollection(bookingsPath);
+    List<Document> documents = await getCollection(bookingsPath);
 
     int numBookings = 0;
 
