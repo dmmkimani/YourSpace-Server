@@ -1,4 +1,4 @@
-# Meeting Room Booking Application - Application Tier
+# YourSpace (Meeting Room Booking Application) - Application Tier
 
 This is the application server for the application. 
 
